@@ -4,4 +4,4 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-wxdragon = "0.9.12"
+wxdragon = { version = "0.9.12", default-features = false }
