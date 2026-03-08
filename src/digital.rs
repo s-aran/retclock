@@ -66,8 +66,7 @@ impl<'a> DigitalClock<'a> {
         }
         let (dw, _) = dc.get_text_extent(&date_text);
 
-        let (tw, th) = dc.get_text_extent(&date_text);
-        let tx = (self.width - tw) / 2;
+        let (_, th) = dc.get_text_extent(&date_text);
         let ty = (self.height - th) / 2 - 26;
         dc.draw_text(&date_text, (self.width - dw) / 2, ty + th + 12);
     }

@@ -50,13 +50,10 @@ impl<'a> AnalogClock<'a> {
 
     fn draw_analog_clock(&self, panel: &Panel) {
         let dc = AutoBufferedPaintDC::new(panel);
-        let size = panel.get_client_size();
-        let width = size.width.max(1);
-        let height = size.height.max(1);
         let footer_h = 34;
-        let dial_h = (height - footer_h).max(24);
-        let radius = ((width.min(dial_h) / 2) - 10).max(10);
-        let cx = width / 2;
+        let dial_h = (self.height - footer_h).max(24);
+        let radius = ((self.width.min(dial_h) / 2) - 10).max(10);
+        let cx = self.width / 2;
         let cy = dial_h / 2;
 
         dc.set_background(Colour::rgb(192, 192, 192));
@@ -149,6 +146,6 @@ impl<'a> AnalogClock<'a> {
             now.minute(),
             now.second()
         );
-        dc.draw_text(&text, 12, height - 24);
+        dc.draw_text(&text, 12, self.height - 24);
     }
 }
