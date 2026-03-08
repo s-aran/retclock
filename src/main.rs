@@ -50,11 +50,11 @@ fn set_title_bar_visible(frame: &Frame, visible: bool) {
 
 fn draw_clock(panel: &Panel, state: ClockState) {
     if state.mode == DisplayMode::Analog {
-        let clock = AnalogClock::new(state);
-        clock.draw(&panel);
+        let clock = AnalogClock::new(panel, state);
+        clock.draw();
     } else {
-        let clock = DigitalClock::new(state);
-        clock.draw(&panel);
+        let clock = DigitalClock::new(panel, state);
+        clock.draw();
     }
 }
 
@@ -67,9 +67,6 @@ fn main() {
         let panel = Panel::builder(&frame).build();
         panel.set_background_style(BackgroundStyle::Paint);
 
-        let file_menu = Menu::builder()
-            .append_item(ID_EXIT, "E&xit\tAlt+F4", "")
-            .build();
         let view_menu = Menu::builder()
             .append_radio_item(ID_VIEW_ANALOG, "Analog", "")
             .append_radio_item(ID_VIEW_DIGITAL, "Digital", "")
@@ -79,7 +76,6 @@ fn main() {
             .append_check_item(ID_ALWAYS_ON_TOP, "Always on top", "")
             .build();
         let menubar = MenuBar::builder()
-            .append(file_menu, "&File")
             .append(view_menu, "&View")
             .append(options_menu, "&Options")
             .build();
@@ -151,10 +147,6 @@ fn main() {
         let state_for_menu = state.clone();
         frame.on_menu_selected(move |event| {
             let id = event.get_id();
-            if id == ID_EXIT {
-                frame_for_menu.close(true);
-                return;
-            }
             if id == ID_SHOW_SECONDS {
                 if let Some(mb) = frame_for_menu.get_menu_bar() {
                     state_for_menu.borrow_mut().show_seconds = mb.is_item_checked(ID_SHOW_SECONDS);

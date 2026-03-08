@@ -4,19 +4,33 @@ use wxdragon::*;
 
 use crate::{ClockState, traits::DrawClock};
 
-pub struct AnalogClock {
+pub struct AnalogClock<'a> {
     state: ClockState,
+
+    panel: &'a Panel,
+    width: i32,
+    height: i32,
 }
 
-impl DrawClock for AnalogClock {
-    fn draw(&self, panel: &Panel) {
-        self.draw_analog_clock(panel);
+impl<'a> DrawClock<'a> for AnalogClock<'a> {
+    fn get_panel(&self) -> &Panel {
+        self.panel
+    }
+
+    fn draw(&self) {
+        self.draw_analog_clock(self.get_panel());
     }
 }
 
-impl AnalogClock {
-    pub fn new(state: ClockState) -> Self {
-        Self { state }
+impl<'a> AnalogClock<'a> {
+    pub fn new(panel: &'a Panel, state: ClockState) -> Self {
+        let size = panel.get_client_size();
+        Self {
+            state,
+            panel,
+            width: size.width.max(1),
+            height: size.height.max(1),
+        }
     }
 
     fn draw_hand(
