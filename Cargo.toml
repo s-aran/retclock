@@ -1,0 +1,10 @@
+[package]
+name = "retclock"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+wxdragon = { version = "0.9.12", default-features = false }
+
+[build-dependencies]
+winres = "0.1"
