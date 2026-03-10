@@ -4,17 +4,14 @@ use std::time::{Duration, Instant};
 use wxdragon::prelude::*;
 
 use crate::analog::AnalogClock;
+use crate::consts::*;
 use crate::digital::DigitalClock;
 use crate::traits::Clock;
 
 mod analog;
+mod consts;
 mod digital;
 mod traits;
-
-const ID_SHOW_SECONDS: Id = ID_HIGHEST + 1;
-const ID_ALWAYS_ON_TOP: Id = ID_HIGHEST + 2;
-const ID_VIEW_ANALOG: Id = ID_HIGHEST + 3;
-const ID_VIEW_DIGITAL: Id = ID_HIGHEST + 4;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum DisplayMode {
@@ -60,7 +57,7 @@ fn main() {
     wxdragon::main(|app| {
         let frame = Frame::builder()
             .with_title("Clock")
-            .with_size(Size::new(260, 300))
+            .with_size(Size::new(FRAME_WIDTH, FRAME_HEIGHT))
             .build();
         let panel = Panel::builder(&frame).build();
         panel.set_background_style(BackgroundStyle::Paint);
