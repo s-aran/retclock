@@ -1,6 +1,9 @@
 use wxdragon::*;
 
-use crate::{ClockState, traits::DrawClock};
+use crate::{
+    ClockState,
+    traits::{Clock, Drawable},
+};
 
 pub struct DigitalClock<'a> {
     state: ClockState,
@@ -8,29 +11,37 @@ pub struct DigitalClock<'a> {
     panel: &'a Panel,
     width: i32,
     height: i32,
+
+    time_font_pt: i32,
+    date_font_pt: i32,
 }
 
-impl<'a> DrawClock<'a> for DigitalClock<'a> {
-    fn get_panel(&self) -> &Panel {
-        self.panel
-    }
-
+impl<'a> Drawable for DigitalClock<'a> {
     fn draw(&self) {
         self.draw_digital_clock(self.get_panel());
     }
 }
 
-impl<'a> DigitalClock<'a> {
-    pub fn new(panel: &'a Panel, state: ClockState) -> Self {
+impl<'a> Clock<'a> for DigitalClock<'a> {
+    fn new(panel: &'a Panel, state: ClockState) -> Self {
         let size = panel.get_client_size();
         Self {
             state,
             panel,
             width: size.width.max(1),
             height: size.height.max(1),
+
+            time_font_pt: 32,
+            date_font_pt: 26,
         }
     }
 
+    fn get_panel(&self) -> &Panel {
+        self.panel
+    }
+}
+
+impl<'a> DigitalClock<'a> {
     fn draw_time(&self, dc: &AutoBufferedPaintDC, now: &DateTime) {
         let time_text = if self.state.show_seconds {
             format!("{:02}:{:02}:{:02}", now.hour(), now.minute(), now.second())
@@ -39,7 +50,7 @@ impl<'a> DigitalClock<'a> {
         };
 
         if let Some(time_font) = Font::builder()
-            .with_point_size(32)
+            .with_point_size(self.time_font_pt)
             .with_family(FontFamily::Modern)
             .with_weight(FontWeight::Bold)
             .build()
@@ -58,7 +69,7 @@ impl<'a> DigitalClock<'a> {
         let date_text = format!("{:04}/{:02}/{:02}", now.year(), now.month(), now.day());
 
         if let Some(date_font) = Font::builder()
-            .with_point_size(26)
+            .with_point_size(self.date_font_pt)
             .with_family(FontFamily::Swiss)
             .build()
         {

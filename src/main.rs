@@ -5,7 +5,7 @@ use wxdragon::prelude::*;
 
 use crate::analog::AnalogClock;
 use crate::digital::DigitalClock;
-use crate::traits::DrawClock;
+use crate::traits::Clock;
 
 mod analog;
 mod digital;
@@ -48,14 +48,12 @@ fn set_title_bar_visible(frame: &Frame, visible: bool) {
     frame.set_style_raw(style);
 }
 
-fn draw_clock(panel: &Panel, state: ClockState) {
-    if state.mode == DisplayMode::Analog {
-        let clock = AnalogClock::new(panel, state);
-        clock.draw();
-    } else {
-        let clock = DigitalClock::new(panel, state);
-        clock.draw();
-    }
+fn draw_clock<'a, T>(panel: &'a Panel, state: ClockState)
+where
+    T: Clock<'a>,
+{
+    let clock = T::new(panel, state);
+    clock.draw();
 }
 
 fn main() {
@@ -101,7 +99,14 @@ fn main() {
         let panel_for_paint = panel;
         let state_for_paint = state.clone();
         panel.on_paint(move |_| {
-            draw_clock(&panel_for_paint, *state_for_paint.borrow());
+            match state_for_paint.borrow().mode {
+                DisplayMode::Analog => {
+                    draw_clock::<AnalogClock>(&panel_for_paint, *state_for_paint.borrow())
+                }
+                DisplayMode::Digital => {
+                    draw_clock::<DigitalClock>(&panel_for_paint, *state_for_paint.borrow())
+                }
+            };
         });
 
         let frame_for_dbl = frame;
@@ -183,6 +188,11 @@ fn main() {
         frame.on_close(move |event| {
             timer_for_close.stop();
             event.skip(true);
+        });
+
+        frame.on_size(move |_| {
+            panel_for_paint.refresh(false, None);
+            panel_for_paint.update();
         });
 
         app.set_top_window(&frame);

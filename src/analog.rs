@@ -2,7 +2,10 @@ use std::f64::consts::PI;
 
 use wxdragon::*;
 
-use crate::{ClockState, traits::DrawClock};
+use crate::{
+    ClockState,
+    traits::{Clock, Drawable},
+};
 
 pub struct AnalogClock<'a> {
     state: ClockState,
@@ -12,18 +15,8 @@ pub struct AnalogClock<'a> {
     height: i32,
 }
 
-impl<'a> DrawClock<'a> for AnalogClock<'a> {
-    fn get_panel(&self) -> &Panel {
-        self.panel
-    }
-
-    fn draw(&self) {
-        self.draw_analog_clock(self.get_panel());
-    }
-}
-
-impl<'a> AnalogClock<'a> {
-    pub fn new(panel: &'a Panel, state: ClockState) -> Self {
+impl<'a> Clock<'a> for AnalogClock<'a> {
+    fn new(panel: &'a Panel, state: ClockState) -> Self {
         let size = panel.get_client_size();
         Self {
             state,
@@ -33,6 +26,18 @@ impl<'a> AnalogClock<'a> {
         }
     }
 
+    fn get_panel(&self) -> &Panel {
+        self.panel
+    }
+}
+
+impl<'a> Drawable for AnalogClock<'a> {
+    fn draw(&self) {
+        self.draw_analog_clock(self.get_panel());
+    }
+}
+
+impl<'a> AnalogClock<'a> {
     fn draw_hand(
         dc: &AutoBufferedPaintDC,
         cx: i32,
